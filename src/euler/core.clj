@@ -37,21 +37,30 @@
     (if (= num (mod num (expt 10 s)))
       (- s 1)
       (recur (+ s 1)))))
-(defn euler4b [i num]
-  "calculate 0th position in the number"
-     (- num (mod num (expt 10 (- (euler4a num) i)))))
-(defn euler4c [i num]
-  "get the ith position in the number"
-  ; dammit - zeros in #'s like 102 screw things up...
-    (cond
-     (= 0 i) (euler4b i num)
-     (< 0 i) (euler4c (- i 1) (- num (euler4c (- i 1) num)))))
-(defn euler4d [num]
-  "get a vector representation of the number"
-  (vec (map #(/ (euler4c % num) (expt 10 (- (euler4a num) %))) (range (+ 1 (euler4a num))))))
-(defn euler4e [num]
+(defn euler4b [num]
+  (loop [e (euler4a num)
+         n num
+         a []]
+    (if (< e 0)
+      a
+      (recur (- e 1) (rem n (expt 10 e)) (conj a (quot n (expt 10 e)))))))
+(defn euler4c [num]
   "for i in 0..size/2 (rounded down), see if num[i] == num[size-i]"
-  (let [n (euler4d num)
+  (let [n (euler4b num)
         s (euler4a num)]
     (every? true? (map #(= (nth n %) (nth n (- s %))) (range 0 (Math/ceil (/ s 2)))))))
+(defn euler4 [s]
+  "find the largest palindrome that's the product of two numbers with s-many digits"
+  (loop [x (expt 10 s)
+         a []]
+    (if (= x 0)
+      (reduce max a)
+      (let [ b  (reduce max
+                        (conj (filter euler4c
+                                (map (partial * (- x 1))
+                                     (range (expt 10 (- s 1))
+                                            (expt 10 s))))
+                              0))]
+           (recur (- x 1) (conj a b))))))
+
 
