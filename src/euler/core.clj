@@ -83,3 +83,41 @@
          b (vec (map get-factors (range 1 (inc x))))]
     (cond (empty? b) (reduce * a)
           true (recur (get-subvec (last b) a) (pop b)))))
+
+(defn sq [x] (* x x))
+(defn sqsum [x] (sq (reduce + (range 1 (+ x 1)))))
+(defn sumsq [x] (reduce + (map sq (range 1 (+ x 1)))))
+(defn euler6 [x] (- (sqsum x) (sumsq x)))
+
+(defn lcd [n t]
+  (loop [a t]
+    (cond (> (* a a) n) n
+          (= (rem n a) 0) a
+          (= 2 a) (recur 3)
+          true (recur (+ a 2)))))
+(defn prime? [x] (= x (lcd x 2)))
+(defn next-prime [x]
+  (loop [a (+ x 2)]
+    (cond (= x 2) 3
+          (prime? a) a
+          true (recur (+ a 2)))))
+(defn euler7 [x]
+  "get the x-th prime"
+  (loop [i 1
+         ans 2]
+    (cond (= i x) ans
+          true (recur (inc i) (next-prime ans)))))
+
+(defn euler8 [x]
+  "find the largest product of 5 consecutive digits in x"
+  (let [L (map read-string (map str (seq (str x))))
+        s (count L)]
+    (loop [ans 0
+           i 0
+           one 0
+           two 0
+           three 0
+           four 0
+           five 0]
+      (cond (= i s) (max ans (* one two three four five))
+            true (recur (max ans (* one two three four five)) (inc i) two three four five (nth L i))))))
