@@ -39,16 +39,20 @@
 (defn palin? [x]
   "is this number a palindrome?"
   (= (seq (str x)) (reverse (seq (str x)))))
+(defn foo [a ans]
+  "get the largest/first palindrome that's a product of x and some m <= i <= x"
+  (loop [b a]
+    (cond (palin? (* a b)) (* a b)
+          (< (* b a) ans) 0
+          true (recur (dec b)))))
 (defn euler4 [x]
   "find the largest palindrome that's the product of 2 x-digit numbers"
   (let [M (- (expt 10 x) 1)
         m (- (expt 10 (- x 1)))]
-  (->> (for [x (range M m -1)
-             y (range M (dec x) -1)]
-         (* x y))
-       (filter #(palin? %))
-       (take 20)
-       (apply max))))
+    (loop [a M
+           ans 0]
+      (cond (< a m) ans
+            true (recur (dec a) (max ans (foo a ans)))))))
 
 (defn lcd [n t]
   (loop [a t]
